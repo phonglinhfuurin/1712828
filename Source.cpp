@@ -49,7 +49,7 @@ int myAtoi(wchar_t *str)
 }
 wchar_t* XoaNgoacKep(wchar_t* line)
 {
-	wchar_t *newLine =(wchar_t*)calloc(wcslen(line),sizeof(wchar_t));
+	wchar_t *newLine =(wchar_t*)calloc(256,sizeof(wchar_t));
 	size_t i, j;
 	if (line[0] != '\"')
 		newLine[0] = line[0];
@@ -65,25 +65,23 @@ wchar_t* XoaNgoacKep(wchar_t* line)
 
 }
 
-
-
 void Get_Part(wchar_t *line, SV *sv)
 {
-	const wchar_t *s = L","; wprintf ;
-	wchar_t *token; wprintf(L"2");
+	const wchar_t *s = L","; 
+	wchar_t *token; 
 
-	token = wcstok(line, s); wprintf;
+	token = wcstok(line, s);  
 	sv->MSSV = (wchar_t*)calloc(15, sizeof(wchar_t));
 	wcscpy(sv->MSSV, token); wprintf;
 
-	token = wcstok(NULL, s); wprintf;
+	token = wcstok(NULL, s);  
 	sv->hoten = (wchar_t*)calloc(30, sizeof(wchar_t));
-	wcscpy(sv->hoten, token);  wprintf;
+	wcscpy(sv->hoten, token);   
 
 
 	token = wcstok(NULL, s);
 	sv->khoa = (wchar_t*)calloc(30, sizeof(wchar_t));
-	wcscpy(sv->khoa, token);  wprintf(L"4");
+	wcscpy(sv->khoa, token);   
 
 
 	token = wcstok(NULL, s);
@@ -91,15 +89,15 @@ void Get_Part(wchar_t *line, SV *sv)
 
 	token = wcstok(NULL, s);
 	sv->ngaysinh = (wchar_t*)calloc(30, sizeof(wchar_t));
-	wcscpy(sv->ngaysinh, token);  wprintf(L"4");
+	wcscpy(sv->ngaysinh, token);   
 	
 	token = wcstok(NULL, s);
 	sv->email = (wchar_t*)calloc(30, sizeof(wchar_t));
-	wcscpy(sv->email, token);  wprintf(L"4");
+	wcscpy(sv->email, token);  
 
 	token = wcstok(NULL, s);
 	sv->hinh = (wchar_t*)calloc(30, sizeof(wchar_t));
-	wcscpy(sv->hinh, token);  wprintf(L"6");
+	wcscpy(sv->hinh, token);   
 
 	token = wcstok(NULL, s);
 	sv->mota = (wchar_t*)calloc(30, sizeof(wchar_t));
@@ -121,13 +119,15 @@ void Get_Part(wchar_t *line, SV *sv)
 			wcscat(sv->sothich, L"\n"); 
 			tokensub = wcstok(NULL, L","); 
 		}
-		free(buff);
+		 free(buff);
 	}
+	 /* free(sv->email); free(sv->hinh); free(sv->hoten); free(sv->khoa); free(sv->mota); free(sv->MSSV);
+	 free(sv->ngaysinh); free(sv->sothich);*/
 
 }
 wchar_t *Replacestr(wchar_t *strtext, wchar_t *find, wchar_t *replace)
 {
-	wchar_t *newbuff = (wchar_t*)calloc((wcslen(strtext) - wcslen(find) + wcslen(replace) + 1), sizeof(wchar_t));
+	wchar_t *newbuff = (wchar_t*)calloc(1024, sizeof(wchar_t));
 	wchar_t *ptr;
 
 	wcscpy(newbuff, strtext);
@@ -137,7 +137,7 @@ wchar_t *Replacestr(wchar_t *strtext, wchar_t *find, wchar_t *replace)
 		wmemmove(ptr + wcslen(replace), ptr + wcslen(find), wcslen(ptr + wcslen(find)) + 1);
 		wcsncpy(ptr, replace, wcslen(replace));
 	}
-
+	
 	return newbuff;
 }
 wchar_t * GetStr_2delim(wchar_t *str, wchar_t *p1, wchar_t *p2)
@@ -151,10 +151,9 @@ wchar_t * GetStr_2delim(wchar_t *str, wchar_t *p1, wchar_t *p2)
 		{
 			 
 			size_t mlen = i2 - (i1 + pl1);
-			wchar_t *ret = (wchar_t*)calloc(mlen + 1,sizeof(wchar_t));
+			wchar_t *ret = (wchar_t*)calloc(mlen,sizeof(wchar_t));
 			if (ret != NULL)
 			{
-		 
 				wmemcpy(ret, i1 + pl1, mlen);
 				ret[mlen] = '\0';
 				return ret;
@@ -164,99 +163,173 @@ wchar_t * GetStr_2delim(wchar_t *str, wchar_t *p1, wchar_t *p2)
 }
 
 void writeHTML(FILE *finHTML, FILE *fout, SV *sv)
-{ 
-	wchar_t*buffcon = (wchar_t*)calloc(20, sizeof(wchar_t));
-	wchar_t* str = (wchar_t*)calloc(2048, sizeof(wchar_t));
-	wchar_t *newstr = (wchar_t*)calloc(2048, sizeof(wchar_t));
-	wchar_t* minibuff = (wchar_t*)calloc(1024, sizeof(wchar_t));
+{
 	rewind(finHTML);
+	//wchar_t*buffcon = (wchar_t*)calloc(256, sizeof(wchar_t));
+	//wchar_t buffcon[40];
+	wchar_t*buffcon = (wchar_t*)calloc(1024, sizeof(wchar_t));
+	wchar_t *newstr = (wchar_t*)calloc(2048 + 1024, sizeof(wchar_t));
+	wchar_t* str = (wchar_t*)calloc(2048, sizeof(wchar_t));
+	wchar_t* minibuff = (wchar_t*)calloc(256, sizeof(wchar_t));
 	while (!feof(finHTML)) {
-		wprintf(L"------ ");
+		//wprintf(L"------ ");   
 		fgetws(str, 2048, finHTML);
 		if (wcsstr(str, L"<title>HCMUS -") != NULL)
 		{
-			buffcon = GetStr_2delim(str, L"HCMUS - ", L"</title>");
-			wcscpy(newstr, Replacestr(str, buffcon, sv->hoten));
-			fputws(newstr, fout);
-			wprintf(L"%s", newstr);
+			wprintf(L"%s", Replacestr(str, GetStr_2delim(str, L"HCMUS - ", L"</title>"), sv->hoten));
+			fputws(Replacestr(str, GetStr_2delim(str, L"HCMUS - ", L"</title>"), sv->hoten), fout);
 			continue;
-
-		};
+		}
 
 		if (wcsstr(str, L"=\"Personal_FullName\">") != NULL)
 		{
-			buffcon = GetStr_2delim(str, L"Personal_FullName\">", L"</div>");
+			wcscpy(buffcon, GetStr_2delim(str, L"Personal_FullName\">", L"</div>"));
 			wcscat(minibuff, sv->hoten);
 			wcscat(minibuff, L" - ");
 			wcscat(minibuff, sv->MSSV);
 			wcscpy(newstr, Replacestr(str, buffcon, minibuff));
 			wprintf(L"%s", newstr);
 			fputws(newstr, fout);
+			free(minibuff);
 			continue;
-		};
+		}
 
-		if (wcsstr(str, L"=\"Personal_Department\">") != NULL)
+		if (wcsstr(str, L"Personal_Department\">") != NULL)
 		{
-			buffcon = GetStr_2delim(str, L"Personal_Department\">", L"</div>");
-			wcscpy(newstr, Replacestr(str, buffcon, sv->khoa));
-			wprintf(L"%s", newstr);
-			fputws(newstr, fout);
-			continue;
-		};
-
-		if (wcsstr(str, L"src=\"") != NULL)
-		{
-			buffcon = GetStr_2delim(str, L"src=\"", L"\"");
-			wcscpy(newstr, Replacestr(str, buffcon, sv->hinh));
-			wprintf(L"%s", newstr);
-			fputws(newstr, fout);
+			wprintf(L"%s", Replacestr(str, GetStr_2delim(str, L"Personal_Department\">", L"</div"), sv->khoa));
 			continue;
 		}
 
 		if (wcsstr(str, L"src=\"") != NULL)
 		{
-			buffcon = GetStr_2delim(str, L"src=\"", L"\"");
-			wcscpy(newstr, Replacestr(str, buffcon, sv->hinh));
-			wprintf(L"%s", newstr);
-			fputws(newstr, fout);
+			wprintf(L"%s", Replacestr(str, GetStr_2delim(str, L"src=\"", L"\""), sv->hinh));
+			fputws(Replacestr(str, GetStr_2delim(str, L"src=\"", L"\""), sv->hinh), fout);
 			continue;
 		}
+
 		if (wcsstr(str, L"<li>Họ và tên:") != NULL)
 		{
-			buffcon = GetStr_2delim(str, L"<li>Họ và tên:", L"</li>");
-			wcscpy(newstr, Replacestr(str, buffcon, sv->hoten));
-			wprintf(L"%s", newstr);
-			fputws(newstr, fout);
+			wprintf(L"%s", Replacestr(str, GetStr_2delim(str, L"<li>Họ và tên:", L"</li>"), sv->hoten));
+			fputws(Replacestr(str, GetStr_2delim(str, L"<li>Họ và tên:", L"</li>"), sv->hoten), fout);
 			continue;
 		}
 		if (wcsstr(str, L"<li>MSSV:") != NULL)
 		{
-			buffcon = GetStr_2delim(str, L"<li>MSSV:", L"</li>");
-			wcscpy(newstr, Replacestr(str, buffcon, sv->MSSV));
-			wprintf(L"%s", newstr);
-			fputws(newstr, fout);
+			wprintf(L"%s", Replacestr(str, GetStr_2delim(str, L"<li>MSSV: ", L"</li>"), sv->MSSV));
+			fputws(Replacestr(str, GetStr_2delim(str, L"<li>MSSV: ", L"</li>"), sv->MSSV), fout);
 			continue;
 		}
-		else
+		if (wcsstr(str, L"<li>Sinh viên khoa ") != NULL)
 		{
-			fputws(str, fout);
+			wprintf(L"%s", Replacestr(str, GetStr_2delim(str, L"<li>Sinh viên khoa ", L"</li>"), sv->khoa));
+			fputws(Replacestr(str, GetStr_2delim(str, L"<li>Sinh viên khoa ", L"</li>"), sv->khoa), fout);
+			continue;
+		}
+		if (wcsstr(str, L"<li>Ngày sinh: ") != NULL)
+		{
+			wprintf(L"%s", Replacestr(str, GetStr_2delim(str, L"<li>Ngày sinh: ", L"</li>"), sv->ngaysinh));
+			fputws(Replacestr(str, GetStr_2delim(str, L"<li>Ngày sinh: ", L"</li>"), sv->ngaysinh), fout);
+			continue;
+		}
+		if (wcsstr(str, L"Email:") != NULL)
+		{
+			wprintf(L"%s", Replacestr(str, GetStr_2delim(str, L"Email:", L"\n"), sv->email));
+			fputws(Replacestr(str, GetStr_2delim(str, L"Email:", L"\n"), sv->email), fout);
+			continue;
+		}
+		if (wcsstr(str, L"Email:") != NULL)
+		{
+			wprintf(L"%s", Replacestr(str, GetStr_2delim(str, L"Email:", L"</li>"), sv->email));
+			fputws(Replacestr(str, GetStr_2delim(str, L"Email:", L"</li>"), sv->email), fout);
+			continue;
+		}
+		if (wcsstr(str, L"Sở thích") != NULL)
+		{
 			wprintf(L"%s", str);
-		};
+			fputws(str, fout);
+			while (wcsstr(str, L"TextInList") == NULL){
+				feof(fout);
+				fgetws(str, 2048, finHTML);
+				wprintf(L"%s", str);
+				fputws(str, fout);
+			}
+			wchar_t *token;
+			token = wcstok(sv->sothich, L"\n");
+			while (token != NULL)
+			{
+				wprintf(L"%s %s %s", L"\t\t\t\t\t<li>", token, L"</li>\n");
+				fputws(L"\t\t\t\t\t<li>", fout);
+				fputws(token, fout);
+				fputws(L"</li>\n", fout);
+				token = wcstok(NULL, L"\n");
+			}
+
+			while (wcsstr(str, L"</ul>") == NULL)
+			{
+				feof(finHTML);
+				fgetws(str, 2048, finHTML);
+			}
+			wprintf(L"%s", str);
+			fputws(str, fout);
+			continue;
+		}
+		if (wcsstr(str, L"Description\">") != NULL)
+		{
+			wprintf(L"%s", str);
+			fputws(str, fout);
+			feof(finHTML);
+			wprintf(L"\t\t\t\t\t%s \n", sv->mota);
+			fputws(L"\t\t\t\t\t", fout);
+			fputws(sv->mota, fout);
+			fputws(L" \n", fout);
+			while (wcsstr(str, L"</div>") == NULL)
+			{
+				feof(finHTML);
+				fgetws(str, 2048, finHTML);
+			}
+			wprintf(L"%s", str);
+			fputws(str, fout);
+			continue;
+		}
+		if (wcsstr(str, L"TH2012/03</br>") != NULL)
+		{
+			wprintf(L"%s", str);
+			fputws(str, fout);
+			feof(finHTML);
+			wprintf(L"\t\t\t%s - %s </br> \n", sv->MSSV, sv->hoten);
+			fputws(L"\t\t\t\t\t", fout);
+			fputws(sv->MSSV, fout);
+			fputws(sv->hoten, fout);
+			fputws(L" \n", fout);
+			while (wcsstr(str, L"</div>") == NULL)
+			{
+				feof(finHTML);
+				fgetws(str, 2048, finHTML);
+			}
+			wprintf(L"%s", str);
+			fputws(str, fout);
+			continue;
+		}
+		wprintf(L"%s", str);
+		fputws(str, fout);
 
 	}
-
+	 free(str);
+	 free(newstr);
+	 free(buffcon);
 }
-
-
-
-
 
 void main()
 
 {
+
 	_setmode(_fileno(stdout), _O_U16TEXT);
 	_setmode(_fileno(stdin), _O_U16TEXT);
 	wchar_t data;
+	wchar_t buff[2048];
+	wchar_t buffHTML[2048];
+	int soluongsinhvien = 0;
+
 	FILE* fin = _wfopen(L"thongtinsv.CSV", L"rt, ccs=UTF-8");
 	if (!fin)
 	{
@@ -264,23 +337,18 @@ void main()
 		fclose(fin);
 		return;
 	}
-	wchar_t buff[2048];
-	wchar_t buffHTML[2048];
+	 
 	FILE* fileOut = _wfopen(L"profilepage.html", L"wt, ccs=UTF-8");
-	int soluontest = 0;
-	while (!feof(fin))
+
+ 	while (!feof(fin))
 	{
-		fgetws(buff, 2048, fin);
-		wprintf(L" line: %ls", buff);
+		fgetws(buff, 2048, fin);   
+		wprintf(L" line: %ls", buff);         // doc tung dong va dem so luong sinh vien
+		soluongsinhvien++;
 	}
+	 
 	rewind(fin);
-	wchar_t *line;
-	line = readLine(fin);
-	wchar_t *line_chuan; 
-	line_chuan = XoaNgoacKep(line);
-	wprintf(L"%s" , line_chuan);
-	rewind(fin);
-	wchar_t *sothich;
+
 	FILE* finHTML = _wfopen(L"FileHTML.html", L"rt, ccs=UTF-8");
 	if (!(finHTML))
 	{
@@ -289,17 +357,33 @@ void main()
 		return;
 	}
 	rewind(finHTML);
-	while (!feof(finHTML))
-	{
-		fgetws(buffHTML, 2048, finHTML);
-		fwprintf(fileOut, buff);
-	}
-	rewind(finHTML);
-	SV *sv=(SV*)calloc(10,sizeof(SV));
-	Get_Part(line_chuan, sv);
-	wprintf(L"%ls %ls %ls %ls %ls %ld %ls %ls so thich %ls", sv->MSSV, sv->hoten, sv->khoa,sv->ngaysinh,sv->email,sv->namhoc, sv->hinh,sv->mota, sv->sothich);
-	rewind(finHTML);
-	writeHTML(finHTML, fileOut, sv);
+
+	
+	int dem = 0;
+	while (dem < soluongsinhvien -1)
+	{   
+		wchar_t *line = (wchar_t*)calloc(2048, sizeof(wchar_t));
+		line = readLine(fin); 
+		wchar_t *line_chuan = (wchar_t*)calloc(2048, sizeof(wchar_t));
+		wcscpy(line_chuan, XoaNgoacKep(line));
+		wprintf(L"\n%s \n", line_chuan ); 
+		wprintf(L"------");
+		SV *sv = (SV*)calloc(10, sizeof(SV));
+		Get_Part(line_chuan, sv);
+		//rewind(fin);
+		wchar_t* Makefilename = (wchar_t*)calloc(256, sizeof(wchar_t));
+		wcscpy(Makefilename, sv->hoten);
+		wcscat(Makefilename, L".html");
+		FILE* fileOut = _wfopen(Makefilename, L"wt, ccs=UTF-8");
+		//rewind(fin);
+		writeHTML(finHTML, fileOut, sv);
+		free(line);
+		free(Makefilename);
+		free(line_chuan);
+		dem++;
+		wprintf(L"SINH VIEN THU %d", dem);
+	} 
+	fclose(finHTML);
 	fclose(fin);
 	fclose(fileOut);
 }
